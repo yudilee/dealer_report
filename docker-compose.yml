@@ -1,0 +1,43 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dealer-reports-app:latest
+    container_name: dealer-reports-app
+    restart: unless-stopped
+    environment:
+      APP_NAME: "Dealer Reports"
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_URL: http://localhost:8000
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /var/www/storage/database.sqlite
+      LOG_CHANNEL: stack
+    volumes:
+      - app_storage:/var/www/storage
+    networks:
+      - dealer-reports-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: dealer-reports-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - app_storage:/var/www/storage
+      - ./public:/var/www/public
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - dealer-reports-net
+
+volumes:
+  app_storage:
+    driver: local
+
+networks:
+  dealer-reports-net:
+    driver: bridge
