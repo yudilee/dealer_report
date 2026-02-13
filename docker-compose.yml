@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: dealer-reports-app:latest
     restart: always
     environment:
       APP_NAME: "Dealer Reports"
@@ -21,7 +20,6 @@ services:
   nginx:
     build:
       context: ./docker/nginx
-    image: dealer-reports-nginx:latest
     restart: always
     ports:
       - "${APP_PORT:-8089}:80"
