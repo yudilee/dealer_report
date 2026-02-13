@@ -8,12 +8,14 @@ services:
       APP_NAME: "Dealer Reports"
       APP_ENV: production
       APP_DEBUG: false
+      APP_KEY: base64:mdyudgsTphh9Tug/LvWeApLuNuADrxAnDPsEzpa3A8w
       APP_URL: http://localhost:${APP_PORT:-8089}
       DB_CONNECTION: sqlite
       DB_DATABASE: /var/www/storage/database.sqlite
-      LOG_CHANNEL: stack
+      LOG_CHANNEL: stderr
     volumes:
       - app_storage:/var/www/storage
+      - public_build:/var/www/public/build
     networks:
       - dealer-reports-net
 
@@ -26,6 +28,7 @@ services:
       - "${APP_PORT:-8089}:80"
     volumes:
       - app_storage:/var/www/storage
+      - public_build:/var/www/public/build
     depends_on:
       - app
     networks:
@@ -33,6 +36,8 @@ services:
 
 volumes:
   app_storage:
+    driver: local
+  public_build:
     driver: local
 
 networks:
