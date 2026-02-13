@@ -24,7 +24,7 @@ services:
     container_name: dealer-reports-nginx
     restart: unless-stopped
     ports:
-      - "8089:80"
+      - "${APP_PORT:-8089}:80"
     volumes:
       - app_storage:/var/www/storage
       - ./public:/var/www/public
