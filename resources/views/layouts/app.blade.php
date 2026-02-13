@@ -334,5 +334,6 @@
     <div class="content">
         @yield('content')
     </div>
+    @include('partials.password-modal')
 </body>
 </html>
