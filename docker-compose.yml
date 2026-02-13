@@ -21,7 +21,6 @@ services:
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
-    image: dealer-reports-nginx:latest
     restart: always
     ports:
       - "${APP_PORT:-8089}:80"
