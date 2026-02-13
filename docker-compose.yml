@@ -4,13 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     image: dealer-reports-app:latest
-    container_name: dealer-reports-app
-    restart: unless-stopped
+    restart: always
     environment:
       APP_NAME: "Dealer Reports"
       APP_ENV: production
       APP_DEBUG: false
-      APP_URL: http://localhost:8000
+      APP_URL: http://localhost:${APP_PORT:-8089}
       DB_CONNECTION: sqlite
       DB_DATABASE: /var/www/storage/database.sqlite
       LOG_CHANNEL: stack
@@ -20,15 +19,15 @@ services:
       - dealer-reports-net
 
   nginx:
-    image: nginx:alpine
-    container_name: dealer-reports-nginx
-    restart: unless-stopped
+    build:
+      context: ./docker/nginx
+    image: dealer-reports-nginx:latest
+    restart: always
     ports:
       - "${APP_PORT:-8089}:80"
     volumes:
       - app_storage:/var/www/storage
       - ./public:/var/www/public
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - app
     networks:

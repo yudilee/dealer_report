@@ -38,4 +38,5 @@ RUN chown -R www-data:www-data /var/www \
 
 # Expose port 9000 and start php-fpm server
 EXPOSE 9000
+RUN chmod +x /var/www/docker/entrypoint.sh
 ENTRYPOINT ["/var/www/docker/entrypoint.sh"]
