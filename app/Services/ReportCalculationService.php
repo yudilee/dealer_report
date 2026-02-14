@@ -145,15 +145,12 @@ class ReportCalculationService
             ->count();
         $workingDays = 6; // per week
 
-        // Labour data
-        $labour = LabourRecord::where('franchise', $franchise)
-            ->whereBetween('inv_date', [$start, $end])
+        // Labour data — fetch ALL labour for invoiced WIPs regardless of when
+        // the work was performed, since labour is attributed to the invoice date.
+        $throughputWips = $throughput->pluck('wip_no')->unique()->filter()->toArray();
+        $deptLabour = LabourRecord::where('franchise', $franchise)
+            ->whereIn('wip_no', $throughputWips)
             ->get();
-
-        // Filter labour by department: we need to join via wip_no to throughput
-        // For simplicity, we match labour to throughput WIPs
-        $throughputWips = $throughput->pluck('wip_no')->unique()->toArray();
-        $deptLabour = $labour->whereIn('wip_no', $throughputWips);
 
         $totalAllowed = $deptLabour->sum('allowed_hours');
         $totalNet = $deptLabour->sum('net');
@@ -174,7 +171,7 @@ class ReportCalculationService
             'total_unit' => $uniqueRegs,
             'avg_throughput_per_day' => $workingDays > 0 ? round($uniqueRegs / $workingDays, 2) : 0,
             'avg_jam_jual_per_unit' => $uniqueRegs > 0 ? round($totalAllowed / $uniqueRegs, 2) : 0,
-            'avg_labor_per_jam' => $totalAllowed > 0 ? round($totalNet / $totalAllowed, 0) : 0,
+            'avg_labor_per_jam' => $totalAllowed > 0 ? round($laborRevenue / $totalAllowed, 0) : 0,
             'avg_spend_per_unit' => $uniqueRegs > 0 ? round($laborRevenue / $uniqueRegs, 0) : 0,
             'pendapatan_sublet' => $subletRevenue,
             'hpp_sublet' => $hppSublet,
